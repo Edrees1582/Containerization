@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  db:
+    build: ./db
+    volumes:
+      - ./db/mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Atypon#123
+      MYSQL_DATABASE: temps
+    restart: always
+  enter-data:
+    build: ./enter-data
+    environment:
+      MYSQL_DATABASE: temps
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Atypon#123
+      MYSQL_HOST: db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    restart: on-failure

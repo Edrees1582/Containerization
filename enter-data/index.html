@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Temperature Data</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Temperature Data</h1>
+      <form action="/enterData" method="POST">
+        <div class="form-group">
+          <label for="tempInput"
+            >Enter temperatures (separated by commas):
+          </label>
+          <input
+            type="text"
+            id="tempInput"
+            name="tempInput"
+            class="form-control"
+            placeholder="Enter temperatures"
+          />
+        </div>
+        <button type="submit" class="btn btn-success mt-3">
+          Add temperatures
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
