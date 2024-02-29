@@ -3,7 +3,7 @@ name: Docker Image Publish
 on:
   push:
     branches: [ "main" ]
-  pull_requests:
+  pull_request:
     branches: [ "main" ]
 
 env:
@@ -37,7 +37,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.MY_GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
