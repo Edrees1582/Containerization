@@ -58,5 +58,4 @@ jobs:
 
       - name: Sign the image with cosign
         if: github.event_name != 'pull_request'
-        run: |
-        cosign sign --key cosign.key ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}
+        run: cosign sign --key cosign.key ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.tags }}
