@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
+const session = require('express-session');
 
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-  // host: '127.0.0.1',
   port: '3306',
   host: process.env.MYSQL_HOST || '127.0.0.1',
   user: process.env.MYSQL_USER || 'root',
@@ -14,53 +14,87 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+app.use(session({
+  secret: 'somerandomsecretkey@$534634',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get('/readData', (req, res) => {
-  connection.query(
-    `SELECT * from temperatures;`,
-    (err, rows, fields) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.send(rows);
-      }
-    }
-  );
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/login.html');
 });
 
-app.get('/enterData', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
-app.post('/enterData', (req, res) => {
-  const temps = req.body.tempInput.split(',').map((temp) => {
-    return parseFloat(temp.trim());
-  });
-
-  temps.forEach((temp) => {
+app.get('/enterData', async (req, res) => {
+  if (req.query.username) {
     connection.query(
-      `INSERT INTO temperatures (temperature) VALUES (${temp});`,
+      `SELECT * FROM users where username = '${req.query.username}';`,
       (err, rows, fields) => {
-        if (err) {
-          console.error('Error inserting temperature:', err);
-        } else {
-          console.log(rows);
-          console.log('---------');
-          console.log(fields);
-          console.log('---------');
-          console.log('Temperature inserted successfully:', temp);
+        if (err) throw err;
+      }
+    );
+
+    connection.query(
+      `SELECT isLoggedIn FROM users where username = '${req.query.username}';`,
+      (err, rows, fields) => {
+        if (err) throw err;
+        else {
+          console.log('rows[0].isLoggedIn: ' + rows[0].isLoggedIn)
+          if (rows[0].isLoggedIn == 1) {
+            req.session.isLoggedIn = 1;
+            req.session.username = req.query.username;
+            res.sendFile(__dirname + '/index.html');
+          }
+          else {
+            res.redirect('/');
+          }
         }
       }
     );
-  });
-
-  res.redirect('/enterData');
+  } else {
+    res.redirect('/');
+  }
 });
 
-const PORT = process.env.PORT || 5000;
+app.post('/enterData', async (req, res) => {
+  if (req.session.isLoggedIn == 1) {
+    const temps = req.body.tempInput.split(',').map((temp) => {
+      return parseFloat(temp.trim());
+    });
 
-app.listen(PORT, () => {
-  console.log('Enter Data services running on port: ' + PORT);
+    temps.forEach((temp) => {
+      connection.query(
+        `INSERT INTO temperatures (temperature) VALUES (${temp});`,
+        (err, rows, fields) => {
+          if (err) {
+            console.error('Error inserting temperatures:', err);
+          } else {
+            console.log('Temperatures inserted successfully:', temp);
+          }
+        }
+      );
+    });
+
+    connection.query(
+      `UPDATE users SET isLoggedIn = 'FALSE' WHERE username = '${req.session.username}';`,
+      (err, result) => {
+        if (err) throw err;
+        else {
+          req.session.isLoggedIn = 0;
+        }
+      }
+    );
+    let username = req.session.username;
+    req.session.username = '';
+    res.redirect(`/enterData?username${username}`);
+  } else {
+    res.redirect('/');
+  }
+});
+
+app.listen(8001, () => {
+  console.log('Enter Data service running on port: 8001');
 });

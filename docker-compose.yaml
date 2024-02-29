@@ -1,22 +1,84 @@
 version: '3.8'
 services:
-  db:
-    build: ./db
+  mysqldb:
+    build: ./mysqldb
     volumes:
-      - ./db/mysql-data:/var/lib/mysql
+      - ./mysqldb/mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: Atypon#123
       MYSQL_DATABASE: temps
+    ports:
+      - "3307:3306"
     restart: always
+
+  mongodb:
+    build: ./mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Atypon#123
+    restart: always
+    volumes:
+      - ./mongodb/mongo-data:/data/db
+      - ./mongodb/init-scripts:/docker-entrypoint-initdb.d
+
   enter-data:
     build: ./enter-data
     environment:
       MYSQL_DATABASE: temps
       MYSQL_USER: root
       MYSQL_PASSWORD: Atypon#123
-      MYSQL_HOST: db
+      MYSQL_HOST: mysqldb
     ports:
-      - "5000:5000"
+      - "8001:8001"
     depends_on:
-      - db
+      - mysqldb
+      - authentication
+    restart: on-failure
+
+  show-results:
+    build: ./show-results
+    environment:
+      MYSQL_DATABASE: temps
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Atypon#123
+      MYSQL_HOST: mysqldb
+    ports:
+      - "8003:8003"
+    links:
+      - mongodb
+    depends_on:
+      - mysqldb
+      - mongodb
+      - authentication
+    restart: on-failure
+
+  authentication:
+    build: ./authentication
+    environment:
+      MYSQL_DATABASE: temps
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Atypon#123
+      MYSQL_HOST: mysqldb
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mysqldb
+    restart: on-failure
+
+  analytics:
+    build: ./analytics
+    environment:
+      MYSQL_DATABASE: temps
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Atypon#123
+      MYSQL_HOST: mysqldb
+    ports:
+      - "8004:8004"
+    links:
+      - mongodb
+    depends_on:
+      - mysqldb
+      - mongodb
     restart: on-failure
