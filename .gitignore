@@ -1,3 +1,4 @@
 node_modules
 mysqldb/mysql-data/*
 mongodb/mongo-data/*
+test.github
