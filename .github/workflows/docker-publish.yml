@@ -3,9 +3,9 @@ name: Docker Image Publish
 on:
   push:
     paths-ignore:
-      - 'docker-publish.yml'
-      - 'README.md'
-      - '.gitignore'
+      - '**/docker-publish.yml'
+      - '**/README.md'
+      - '**/.gitignore'
     branches: [ 'main' ]
 
 jobs:
