@@ -15,9 +15,19 @@ jobs:
     - name: Build and push Docker images
       run: |
         docker-compose build
-        docker tag containerization edrees1582/containerization:latest
+        docker tag containerization-mysqldb edrees1582/containerization-mysqldb:latest
+        docker tag containerization-mongodb edrees1582/containerization-mongodb:latest
+        docker tag containerization-authentication edrees1582/containerization-authentication:latest
+        docker tag containerization-enter-data edrees1582/containerization-enter-data:latest
+        docker tag containerization-analytics edrees1582/containerization-analytics:latest
+        docker tag containerization-show-results edrees1582/containerization-show-results:latest
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-        docker push edrees1582/containerization:latest
+        docker push edrees1582/containerization-mysqldb:latest
+        docker push edrees1582/containerization-mongodb:latest
+        docker push edrees1582/containerization-authentication:latest
+        docker push edrees1582/containerization-enter-data:latest
+        docker push edrees1582/containerization-analytics:latest
+        docker push edrees1582/containerization-show-results:latest
 
 
 # on:
