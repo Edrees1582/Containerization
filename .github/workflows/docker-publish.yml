@@ -18,7 +18,7 @@ jobs:
         docker-compose build
         services=(containerization-mysqldb containerization-mongodb containerization-authentication containerization-enter-data containerization-analytics containerization-show-results)
         for service in "${services[@]}"; do
-          docker tag $service edrees1582/$service
+          docker tag $service edrees1582/$service:latest
           docker push edrees1582/$service
         done
 
