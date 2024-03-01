@@ -21,6 +21,6 @@ jobs:
         docker-compose build
         services=(mysqldb mongodb authentication enter-data analytics show-results)
         for service in "${services[@]}"; do
-          docker tag $service edrees1582/$service:latest
-          docker push edrees1582/$service
+          docker tag $service ${{ secrets.DOCKERHUB_USERNAME }}/$service:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$service
         done
