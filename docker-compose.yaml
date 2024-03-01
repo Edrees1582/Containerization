@@ -2,6 +2,7 @@ version: '3.8'
 services:
   mysqldb:
     build: ./mysqldb
+    image: mysqldb
     volumes:
       - ./mysqldb/mysql-data:/var/lib/mysql
     environment:
@@ -13,6 +14,7 @@ services:
 
   mongodb:
     build: ./mongodb
+    image: mongodb
     ports:
       - "27017:27017"
     environment:
@@ -23,8 +25,23 @@ services:
       - ./mongodb/mongo-data:/data/db
       - ./mongodb/init-scripts:/docker-entrypoint-initdb.d
 
+  authentication:
+    build: ./authentication
+    image: authentication
+    environment:
+      MYSQL_DATABASE: temps
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Atypon#123
+      MYSQL_HOST: mysqldb
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mysqldb
+    restart: on-failure
+
   enter-data:
     build: ./enter-data
+    image: enter-data
     environment:
       MYSQL_DATABASE: temps
       MYSQL_USER: root
@@ -37,8 +54,26 @@ services:
       - authentication
     restart: on-failure
 
+  analytics:
+    build: ./analytics
+    image: analytics
+    environment:
+      MYSQL_DATABASE: temps
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Atypon#123
+      MYSQL_HOST: mysqldb
+    ports:
+      - "8004:8004"
+    links:
+      - mongodb
+    depends_on:
+      - mysqldb
+      - mongodb
+    restart: on-failure
+
   show-results:
     build: ./show-results
+    image: show-results
     environment:
       MYSQL_DATABASE: temps
       MYSQL_USER: root
@@ -52,33 +87,4 @@ services:
       - mysqldb
       - mongodb
       - authentication
-    restart: on-failure
-
-  authentication:
-    build: ./authentication
-    environment:
-      MYSQL_DATABASE: temps
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Atypon#123
-      MYSQL_HOST: mysqldb
-    ports:
-      - "8002:8002"
-    depends_on:
-      - mysqldb
-    restart: on-failure
-
-  analytics:
-    build: ./analytics
-    environment:
-      MYSQL_DATABASE: temps
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Atypon#123
-      MYSQL_HOST: mysqldb
-    ports:
-      - "8004:8004"
-    links:
-      - mongodb
-    depends_on:
-      - mysqldb
-      - mongodb
     restart: on-failure
