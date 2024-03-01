@@ -14,11 +14,11 @@ jobs:
     
     - name: Build and push Docker images
       run: |
-        services=("containerization-mysqldb" "containerization-mongodb" "containerization-authentication" "containerization-enter-data" "containerization-analytics" "containerization-show-results")
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+        services=(containerization-mysqldb containerization-mongodb containerization-authentication containerization-enter-data containerization-analytics containerization-show-results)
         for service in "${services[@]}"; do
           docker-compose build $service
           docker tag $service edrees1582/$service
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker push edrees1582/$service
         done
 
