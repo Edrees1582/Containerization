@@ -1,2 +1,3 @@
 node_modules
-mysqldb/mysql-data/mysql.sock
+mysqldb/mysql-data
+mongodb/mongo-data
