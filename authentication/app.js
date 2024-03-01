@@ -20,12 +20,13 @@ app.post('/auth-enter', (req, res) => {
   connection.query(
     `SELECT * FROM users WHERE username = '${req.body.username}' AND password = '${req.body.password}';`,
     (err, rows, fields) => {
-      if (err) res.status(403);
+      if (err) throw err;
+      else if (rows.length == 0) res.redirect('http://localhost:8001');
       else {
-        connection.query(`UPDATE users SET isLoggedIn = TRUE WHERE username = '${req.body.username}';`, (err, result) => {
+        connection.query(`UPDATE users SET isLoggedIn = '1' WHERE username = '${req.body.username}';`, (err, result) => {
           if (err) throw err;
+          else res.redirect(`http://localhost:8001/enterData?username=${req.body.username}`);
         });
-        res.redirect(`http://localhost:8001/enterData?username=${req.body.username}`);
       }
     }
   );
@@ -35,14 +36,14 @@ app.post('/auth-show', (req, res) => {
   connection.query(
     `SELECT * FROM users WHERE username = '${req.body.username}' AND password = '${req.body.password}';`,
     (err, rows, fields) => {
-      if (err) res.status(403);
+      if (err) throw err;
+      else if (rows.length == 0) res.redirect('http://localhost:8003');
       else {
         console.log(`SELECT user: ${rows}`);
-        connection.query(`UPDATE users SET isLoggedIn = TRUE WHERE username = '${req.body.username}';`, (err, result) => {
+        connection.query(`UPDATE users SET isLoggedIn = '1' WHERE username = '${req.body.username}';`, (err, result) => {
           if (err) throw err;
-          else console.log(`UPDATE isLoggedIn: ${result}`);
+          else res.redirect(`http://localhost:8003/showResults?username=${req.body.username}`);
         });
-        res.redirect(`http://localhost:8003/showResults?username=${req.body.username}`);
       }
     }
   );

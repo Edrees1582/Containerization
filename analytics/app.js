@@ -27,6 +27,10 @@ connection.connect();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.redirect('/analytics');
+});
+
 app.get('/analytics', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });

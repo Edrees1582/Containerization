@@ -34,6 +34,7 @@ app.get('/enterData', async (req, res) => {
       `SELECT * FROM users where username = '${req.query.username}';`,
       (err, rows, fields) => {
         if (err) throw err;
+        else if (rows.length == 0) res.redirect('/');
       }
     );
 
@@ -41,16 +42,14 @@ app.get('/enterData', async (req, res) => {
       `SELECT isLoggedIn FROM users where username = '${req.query.username}';`,
       (err, rows, fields) => {
         if (err) throw err;
+        else if (rows.length == 0) res.redirect('/');
         else {
-          console.log('rows[0].isLoggedIn: ' + rows[0].isLoggedIn)
           if (rows[0].isLoggedIn == 1) {
             req.session.isLoggedIn = 1;
             req.session.username = req.query.username;
             res.sendFile(__dirname + '/index.html');
           }
-          else {
-            res.redirect('/');
-          }
+          else res.redirect('/');
         }
       }
     );
@@ -69,22 +68,19 @@ app.post('/enterData', async (req, res) => {
       connection.query(
         `INSERT INTO temperatures (temperature) VALUES (${temp});`,
         (err, rows, fields) => {
-          if (err) {
+          if (err)
             console.error('Error inserting temperatures:', err);
-          } else {
+          else
             console.log('Temperatures inserted successfully:', temp);
-          }
         }
       );
     });
 
     connection.query(
-      `UPDATE users SET isLoggedIn = 'FALSE' WHERE username = '${req.session.username}';`,
+      `UPDATE users SET isLoggedIn = '0' WHERE username = '${req.session.username}';`,
       (err, result) => {
         if (err) throw err;
-        else {
-          req.session.isLoggedIn = 0;
-        }
+        else req.session.isLoggedIn = 0;
       }
     );
     let username = req.session.username;
