@@ -13,8 +13,6 @@ const client = new MongoClient(uri, {
   }
 });
 
-// Testing CI/CD
-
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
