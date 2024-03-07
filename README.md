@@ -9,6 +9,8 @@ A containerized microservices data collection and analytics system.
 * The Authentication Services is a simple service to validate users credentials. <br>
 * The Analytics Service reads data from MySql DB service, gets simple statistics like Max, Min, Avg. and writes that to Mongo DB Service.
 
+* CI/CD pipeline that builds docker images from these services and pushes them to Docker Hub repo.
+
 ### Login page
 ![Login page](https://i.ibb.co/K5TC3T5/Screenshot-11.png)
 
